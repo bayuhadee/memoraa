@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'File terlalu besar')
+@section('code', '413')
+@section('heading', 'File terlalu besar')
+@section('message', $message ?? 'Ukuran file melebihi batas server.')

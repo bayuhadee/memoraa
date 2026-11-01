@@ -1,0 +1,103 @@
+@import '@fontsource/cormorant-garamond/400.css';
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/cormorant-garamond/500-italic.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import 'photoswipe/style.css';
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* Palet earthy: krem, cokelat kayu, aksen emas/tembaga, teks gelap. */
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
+
+    --color-cream: #f8f4ed;
+    --color-sand: #ede4d5;
+    --color-linen: #e2d5c1;
+    --color-wood: #7a5a41;
+    --color-wood-dark: #4a3527;
+    --color-espresso: #2a201a;
+    --color-gold: #b08d57;
+    --color-gold-dark: #94733f;
+    --color-ink: #2b2420;
+    --color-muted: #7a6e64;
+
+    --animate-fade-in: fade-in 1.2s ease both;
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+
+@layer base {
+    html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+    body { @apply bg-cream text-ink font-sans antialiased; }
+    h1, h2, h3, .font-display { @apply font-serif; letter-spacing: -0.01em; }
+    [x-cloak] { display: none !important; }
+}
+
+@layer components {
+    .container-site { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+
+    .eyebrow { @apply inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-gold; }
+    .eyebrow::before { content: ''; @apply block h-px w-8 bg-gold/70; }
+
+    .btn, .btn-primary, .btn-gold, .btn-outline, .btn-ghost-light, .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+    .btn-primary { @apply bg-wood-dark text-cream hover:bg-espresso hover:shadow-lg hover:-translate-y-0.5; }
+    .btn-gold { @apply bg-gold text-white hover:bg-gold-dark hover:shadow-lg hover:-translate-y-0.5; }
+    .btn-outline { @apply border border-wood-dark/25 text-wood-dark hover:border-wood-dark hover:bg-wood-dark hover:text-cream; }
+    .btn-ghost-light { @apply border border-white/50 text-white hover:bg-white hover:text-espresso; }
+    .btn-danger { @apply bg-red-700 text-white hover:bg-red-800; }
+    .btn-sm { @apply px-4 py-2 text-xs; }
+
+    .card { @apply rounded-2xl bg-white/80 shadow-[0_1px_2px_rgba(42,32,26,0.04),0_8px_24px_-12px_rgba(42,32,26,0.12)] ring-1 ring-wood/10; }
+
+    .field-label { @apply mb-1.5 block text-sm font-medium text-wood-dark; }
+    .field { @apply block w-full rounded-xl border border-linen bg-white px-4 py-3 text-ink placeholder:text-muted/60 shadow-sm transition focus:border-gold focus:ring-2 focus:ring-gold/30 focus:outline-none; }
+    .field-error { @apply mt-1.5 text-sm text-red-700; }
+
+    .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset; }
+
+    /* Animasi muncul halus saat scroll (diaktifkan oleh app.js). */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s ease, transform .9s ease; }
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Teks honeypot: tidak terlihat manusia, tapi tetap ada di DOM. */
+    .hp-field { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; overflow: hidden; }
+
+    .hero-slide { @apply absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-[1600ms] ease-in-out; transform: scale(1.06); }
+    .hero-slide.is-active { opacity: 1; animation: hero-zoom 9s ease-out forwards; }
+
+    .masonry { column-gap: 0.75rem; @apply columns-2 sm:columns-3 lg:columns-4; }
+    .masonry > * { break-inside: avoid; @apply mb-3; }
+
+    /* Caption kustom di lightbox */
+    .pswp__custom-caption { @apply absolute bottom-4 left-1/2 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-xl bg-black/60 px-4 py-3 text-center text-sm text-white backdrop-blur; }
+    .pswp__custom-caption:empty { display: none; }
+    .pswp__custom-caption strong { @apply block font-serif text-lg font-medium; }
+}
+
+@keyframes hero-zoom {
+    from { transform: scale(1.08); }
+    to { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .hero-slide.is-active { animation: none; transform: none; }
+}
+
+@media print {
+    .no-print { display: none !important; }
+    body { background: #fff; }
+}
