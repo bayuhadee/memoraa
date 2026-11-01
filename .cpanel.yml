@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/awcreati/amoraa.awcreative.my.id/
+    - export DEPLOYPATH=/home/awcreati/public_html/
     - /bin/rsync -av --exclude='.git' --exclude='.cpanel.yml' ./ $DEPLOYPATH
