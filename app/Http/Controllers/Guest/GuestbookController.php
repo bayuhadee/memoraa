@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Guest;
 
+use App\Exceptions\GuestbookFullException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guest\GuestbookRequest;
 use App\Services\GuestbookService;
@@ -19,12 +20,20 @@ class GuestbookController extends Controller
                 ->with('error', 'Periode pengisian buku tamu telah berakhir.');
         }
 
+        if (! $ctx->guest && $ctx->event->isGuestbookFull()) {
+            return $this->fullRedirect($ctx);
+        }
+
         return view('guest.guestbook', ['event' => $ctx->event, 'guest' => $ctx->guest]);
     }
 
     public function store(GuestbookRequest $request, GuestContext $ctx)
     {
-        [, $created] = $this->guestbook->create($ctx->event, $ctx->deviceToken, $request->guestData(), $request);
+        try {
+            [, $created] = $this->guestbook->create($ctx->event, $ctx->deviceToken, $request->guestData(), $request);
+        } catch (GuestbookFullException) {
+            return $this->fullRedirect($ctx);
+        }
 
         return redirect()->route('guest.my-photos', $ctx->event)->with(
             $created ? 'success' : 'info',
@@ -45,5 +54,11 @@ class GuestbookController extends Controller
         $this->guestbook->update($ctx->guest, $request->guestData());
 
         return redirect()->route('guest.my-photos', $ctx->event)->with('success', 'Buku tamu berhasil diperbarui.');
+    }
+
+    private function fullRedirect(GuestContext $ctx)
+    {
+        return redirect()->route('guest.gallery', $ctx->event)
+            ->with('error', 'Mohon maaf buku tamu telah penuh');
     }
 }

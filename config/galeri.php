@@ -49,6 +49,14 @@ return [
     ],
 
     /*
+    | Foto cover event: diperkecil (tanpa crop) agar sisi terpanjang maksimal sekian piksel.
+    */
+    'cover' => [
+        'max_dimension' => 1920,
+        'quality' => 82,
+    ],
+
+    /*
     | ZIP: di bawah batas ini dibuat langsung (sinkron), di atasnya via queue.
     */
     'zip' => [

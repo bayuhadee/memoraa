@@ -6,7 +6,7 @@
     <a href="{{ $event->exists ? route('owner.events.show', $event) : route('owner.events.index') }}" class="text-sm text-muted hover:text-wood-dark">&larr; Kembali</a>
     <h1 class="mt-2 text-4xl text-wood-dark">{{ $event->exists ? 'Ubah Event' : 'Tambah Event' }}</h1>
 
-    <form method="POST" action="{{ $event->exists ? route('owner.events.update', $event) : route('owner.events.store') }}" class="mt-6 card max-w-2xl space-y-5 p-6">
+    <form method="POST" action="{{ $event->exists ? route('owner.events.update', $event) : route('owner.events.store') }}" enctype="multipart/form-data" class="mt-6 card max-w-2xl space-y-5 p-6">
         @csrf
         @if ($event->exists) @method('PUT') @endif
 
@@ -48,6 +48,34 @@
             <label for="address" class="field-label">Alamat acara</label>
             <textarea id="address" name="address" rows="3" maxlength="1000" required class="field">{{ old('address', $event->address) }}</textarea>
             @error('address')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+
+        <div>
+            <label for="max_guests" class="field-label">Maksimal tamu (opsional)</label>
+            <input id="max_guests" name="max_guests" type="number" min="1" max="100000" step="1" inputmode="numeric"
+                   value="{{ old('max_guests', $event->max_guests) }}" class="field sm:max-w-[12rem]" placeholder="Tanpa batas">
+            <p class="mt-1 text-xs text-muted">
+                Jumlah perangkat/tamu yang boleh mengisi buku tamu. Kosongkan jika tanpa batas.
+                @if ($event->exists) Saat ini sudah <strong>{{ $event->guests_count }}</strong> tamu mengisi.@endif
+            </p>
+            @error('max_guests')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+
+        <div>
+            <label for="cover" class="field-label">Foto cover (opsional)</label>
+            @if ($event->hasCover())
+                <img src="{{ $event->coverUrl() }}" alt="Cover saat ini" class="mb-3 aspect-[16/7] w-full rounded-xl object-cover ring-1 ring-wood/10">
+            @endif
+            <input id="cover" name="cover" type="file" accept="{{ \App\Support\PhotoRules::accept() }}" class="field py-2.5">
+            <p class="mt-1 text-xs text-muted">Tampil sebagai latar header di halaman tamu. {{ $event->hasCover() ? 'Pilih file baru untuk mengganti cover.' : '' }}</p>
+            @error('cover')<p class="field-error">{{ $message }}</p>@enderror
+            @if ($event->hasCover())
+                <label class="mt-2 flex items-center gap-2 text-sm text-red-700">
+                    <input type="hidden" name="remove_cover" value="0">
+                    <input type="checkbox" name="remove_cover" value="1" class="accent-red-700" @checked(old('remove_cover'))>
+                    Hapus foto cover
+                </label>
+            @endif
         </div>
 
         <label class="flex items-center gap-2 text-sm">

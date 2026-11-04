@@ -11,7 +11,10 @@
         <div class="relative z-10 card mx-auto max-w-2xl p-6 text-center sm:p-8">
             @include('partials.flash')
 
-            @if ($uploadOpen)
+            @if ($uploadOpen && $guestbookFull)
+                <p class="font-serif text-2xl text-wood-dark">Mohon maaf buku tamu telah penuh</p>
+                <p class="mt-2 text-sm text-muted">Terima kasih atas doa dan kehadiran Anda. Galeri tetap bisa dilihat dan foto bisa di-download.</p>
+            @elseif ($uploadOpen)
                 <p class="font-serif text-2xl text-wood-dark">Bagikan momen terbaik Anda</p>
                 <p class="mt-2 text-sm text-muted">Isi buku tamu lalu upload hingga {{ config('galeri.photos.max_per_guest') }} foto terbaik. Tanpa aplikasi, tanpa daftar akun.</p>
                 <a href="{{ $hasGuest ? route('guest.my-photos', $event) : route('guest.guestbook', $event) }}" class="btn-primary mt-5 w-full sm:w-auto">
@@ -38,7 +41,7 @@
         <section class="mt-14" aria-labelledby="judul-galeri">
             <div class="mb-6 text-center">
                 <p class="eyebrow justify-center">Momen Bahagia</p>
-                <h2 id="judul-galeri" class="mt-2 text-4xl text-wood-dark">Galeri Foto</h2>
+                <h2 id="judul-galeri" class="mt-2 text-4xl text-wood-dark">Foto dari Tamu</h2>
             </div>
 
             @if ($photos->isEmpty())

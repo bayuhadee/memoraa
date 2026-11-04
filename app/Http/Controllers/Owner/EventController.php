@@ -41,7 +41,7 @@ class EventController extends Controller
 
     public function store(EventRequest $request)
     {
-        $event = $this->events->create($request->eventData());
+        $event = $this->events->create($request->eventData(), $request->coverFile());
 
         return redirect()->route('owner.events.show', $event)
             ->with('success', "Event dibuat. Password host: {$event->password_plain}");
@@ -61,12 +61,14 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
+        $event->loadCount('guests');
+
         return view('owner.events.form', ['event' => $event, 'statuses' => PaymentStatus::options()]);
     }
 
     public function update(EventRequest $request, Event $event)
     {
-        $this->events->update($event, $request->eventData());
+        $this->events->update($event, $request->eventData(), $request->coverFile(), $request->boolean('remove_cover'));
 
         return redirect()->route('owner.events.show', $event)->with('success', 'Event berhasil diperbarui.');
     }

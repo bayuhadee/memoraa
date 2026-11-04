@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Photo;
 use App\Services\PhotoStorage;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,13 @@ class MediaController extends Controller
         return $this->file($photo->path, 'attachment', $photo->downloadName($this->number($photo)));
     }
 
+    public function cover(Event $event): BinaryFileResponse
+    {
+        $this->ensureEventAccessible($event);
+
+        return $this->file($event->cover_path, 'inline', 'cover-'.$event->event_code.'.jpg');
+    }
+
     private function ensureAccessible(Photo $photo): void
     {
         abort_unless($photo->hasImage(), 404);
@@ -39,6 +47,11 @@ class MediaController extends Controller
         $event = $photo->event;
         abort_if($event === null, 404);
 
+        $this->ensureEventAccessible($event);
+    }
+
+    private function ensureEventAccessible(Event $event): void
+    {
         // Event nonaktif: hanya owner / host event tersebut yang masih bisa melihat.
         if (! $event->is_active) {
             $isOwner = Auth::guard('owner')->check();

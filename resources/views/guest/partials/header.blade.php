@@ -1,8 +1,14 @@
 {{-- Header undangan: nama mempelai, tanggal, alamat --}}
 <header class="relative overflow-hidden bg-espresso text-cream">
-    <div class="absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_0)] [background-size:22px_22px]"></div>
-    <div class="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-gold/25 blur-3xl"></div>
-    <div class="relative container-site py-14 text-center sm:py-20 {{ $compact ?? false ? '!py-10' : '' }}">
+    @if ($event->hasCover())
+        {{-- Cover dari owner jadi latar; lapisan gelap tipis agar teks tetap terbaca. --}}
+        <img src="{{ $event->coverUrl() }}" alt="" class="absolute inset-0 h-full w-full object-cover" fetchpriority="high">
+        <div class="absolute inset-0 bg-gradient-to-b from-espresso/55 via-espresso/35 to-espresso/75"></div>
+    @else
+        <div class="absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_0)] [background-size:22px_22px]"></div>
+        <div class="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-gold/25 blur-3xl"></div>
+    @endif
+    <div class="relative container-site py-14 text-center sm:py-20 {{ $event->hasCover() ? '[text-shadow:0_2px_12px_rgba(0,0,0,0.45)]' : '' }} {{ $compact ?? false ? '!py-10' : '' }}">
         <img src="{{ asset('images/brand/icon-light.png') }}" alt="" width="512" height="512" class="mx-auto mb-3 h-12 w-12 opacity-90">
         <p class="eyebrow justify-center text-gold before:hidden">Galeri &amp; Buku Tamu</p>
         <h1 class="mt-4 font-serif text-4xl leading-tight font-medium sm:text-6xl">

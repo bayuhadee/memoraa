@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\GuestbookFullException;
 use App\Models\Event;
 use App\Models\Guest;
 use App\Support\Audit;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GuestbookService
 {
@@ -16,6 +18,8 @@ class GuestbookService
      *
      * @param  array{name: string, address: string, message: string}  $data
      * @return array{0: Guest, 1: bool} [guest, dibuat baru?]
+     *
+     * @throws GuestbookFullException jika jumlah tamu sudah mencapai batas event
      */
     public function create(Event $event, string $deviceToken, array $data, Request $request): array
     {
@@ -31,7 +35,16 @@ class GuestbookService
         $guest->user_agent = substr((string) $request->userAgent(), 0, 1000);
 
         try {
-            $guest->save();
+            DB::transaction(function () use ($event, $guest) {
+                // Kunci baris event agar dua tamu terakhir tidak lolos bersamaan melewati batas.
+                $locked = Event::whereKey($event->id)->lockForUpdate()->first();
+
+                if ($locked->isGuestbookFull()) {
+                    throw new GuestbookFullException;
+                }
+
+                $guest->save();
+            });
         } catch (UniqueConstraintViolationException) {
             // Dua request bersamaan dari perangkat yang sama: DB menolak yang kedua.
             return [$this->find($event, $deviceToken), false];

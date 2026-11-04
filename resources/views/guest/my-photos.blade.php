@@ -142,6 +142,8 @@
                     Kuota foto Anda sudah penuh. Anda masih bisa mengganti atau menghapus foto di atas.
                 </div>
             @endif
+
+            <a href="{{ route('guest.gallery', $event) }}" class="btn-outline mt-4 w-full">&larr; Kembali ke Galeri</a>
         </div>
     </main>
 @endsection

@@ -51,6 +51,7 @@ Route::prefix('e/{event:event_code}')
 |--------------------------------------------------------------------------
 */
 Route::middleware('throttle:media')->group(function () {
+    Route::get('media/cover/{event:event_code}', [MediaController::class, 'cover'])->name('media.cover');
     Route::get('media/{photo}/download', [MediaController::class, 'download'])->name('media.download');
     Route::get('media/{photo}/{size}', [MediaController::class, 'show'])
         ->whereIn('size', ['thumb', 'full'])

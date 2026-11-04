@@ -34,6 +34,7 @@ class GalleryController extends Controller
             'guestCount' => $event->guests()->count(),
             'hasGuest' => $ctx->hasGuest(),
             'uploadOpen' => $event->isUploadOpen(),
+            'guestbookFull' => ! $ctx->hasGuest() && $event->isGuestbookFull(),
         ]);
     }
 }

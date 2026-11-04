@@ -27,6 +27,10 @@
         </div>
     </div>
 
+    @if ($event->hasCover())
+        <img src="{{ $event->coverUrl() }}" alt="Foto cover {{ $event->bride_groom_names }}" class="mt-6 aspect-[16/5] w-full rounded-2xl object-cover ring-1 ring-wood/10">
+    @endif
+
     <div class="mt-8 grid gap-6 lg:grid-cols-3">
         {{-- Akses host --}}
         <section class="card p-6 lg:col-span-2">
@@ -65,7 +69,12 @@
             <h2 class="text-2xl text-wood-dark">QR Code</h2>
             <img src="{{ route('owner.events.qrcode', $event) }}" alt="QR code link galeri" class="mx-auto mt-4 w-full max-w-[240px] rounded-xl bg-white p-2 ring-1 ring-wood/10">
             <a href="{{ route('owner.events.qrcode', [$event, 'download' => 1]) }}" class="btn-primary btn-sm mt-4">Download PNG</a>
-            <p class="mt-6 text-sm text-muted">{{ $event->guests_count }} tamu · {{ $event->photos_count }} foto</p>
+            <p class="mt-6 text-sm text-muted">
+                {{ $event->guests_count }}{{ $event->hasGuestLimit() ? ' / '.$event->max_guests : '' }} tamu · {{ $event->photos_count }} foto
+            </p>
+            @if ($event->hasGuestLimit() && $event->guests_count >= $event->max_guests)
+                <p class="mt-1 text-xs font-medium text-amber-700">Kuota buku tamu penuh</p>
+            @endif
         </section>
     </div>
 

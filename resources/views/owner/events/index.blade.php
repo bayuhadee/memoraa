@@ -36,7 +36,7 @@
                         <td class="px-4 py-3"><a href="{{ route('owner.events.show', $event) }}" class="font-medium text-wood-dark hover:underline">{{ $event->bride_groom_names }}</a></td>
                         <td class="px-4 py-3 whitespace-nowrap">{{ $event->event_date->translatedFormat('j M Y') }}</td>
                         <td class="px-4 py-3 font-mono tracking-widest">{{ $event->password_plain }}</td>
-                        <td class="px-4 py-3">{{ $event->guests_count }} / {{ $event->photos_count }}</td>
+                        <td class="px-4 py-3">{{ $event->guests_count }}{{ $event->hasGuestLimit() ? ' (maks '.$event->max_guests.')' : '' }} / {{ $event->photos_count }}</td>
                         <td class="px-4 py-3">@include('owner._payment-select', ['event' => $event])</td>
                         <td class="px-4 py-3 text-right whitespace-nowrap">
                             <a href="{{ route('owner.events.show', $event) }}" class="btn-outline btn-sm">Detail</a>

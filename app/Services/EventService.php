@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Event;
 use App\Support\Audit;
+use Illuminate\Http\UploadedFile;
 
 class EventService
 {
@@ -13,6 +14,7 @@ class EventService
     public function __construct(
         private readonly PhotoUploadService $photos,
         private readonly PhotoStorage $storage,
+        private readonly ImageProcessor $images,
     ) {}
 
     public function generatePassword(int $length = 4): string
@@ -37,21 +39,49 @@ class EventService
         return $code;
     }
 
-    public function create(array $data): Event
+    public function create(array $data, ?UploadedFile $cover = null): Event
     {
         $event = new Event($data);
         $event->event_code = ($data['event_code'] ?? null) ?: $this->generateCode();
         $event->setEventPassword($this->generatePassword());
         $event->save();
 
+        if ($cover) {
+            $this->replaceCover($event, $cover);
+        }
+
         return $event;
     }
 
-    public function update(Event $event, array $data): Event
+    public function update(Event $event, array $data, ?UploadedFile $cover = null, bool $removeCover = false): Event
     {
         $event->fill($data)->save();
 
+        if ($cover) {
+            $this->replaceCover($event, $cover);
+        } elseif ($removeCover) {
+            $this->removeCover($event);
+        }
+
         return $event;
+    }
+
+    /** Simpan cover baru (sudah divalidasi SafeImage) lalu hapus file cover lama. */
+    public function replaceCover(Event $event, UploadedFile $file): void
+    {
+        $path = $this->storage->newCoverPath($event->id);
+        $this->storage->put($path, $this->images->cover($file->getRealPath()));
+
+        $old = $event->cover_path;
+        $event->forceFill(['cover_path' => $path])->save();
+        $this->storage->delete([$old]);
+    }
+
+    public function removeCover(Event $event): void
+    {
+        $old = $event->cover_path;
+        $event->forceFill(['cover_path' => null])->save();
+        $this->storage->delete([$old]);
     }
 
     public function regeneratePassword(Event $event): string
@@ -80,8 +110,11 @@ class EventService
     public function delete(Event $event): void
     {
         $id = $event->id;
+        $cover = $event->cover_path;
         $event->delete(); // foto & file dihapus via model event
         $this->storage->deleteEventDirectories($id);
+        $this->storage->delete([$cover]);
+        $this->storage->disk()->deleteDirectory("covers/{$id}");
 
         Audit::log('event.deleted', ['event_id' => $id]);
     }

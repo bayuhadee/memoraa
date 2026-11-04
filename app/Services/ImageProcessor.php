@@ -28,6 +28,15 @@ class ImageProcessor
         return $driver === 'imagick' ? ImageManager::imagick(...$options) : ImageManager::gd(...$options);
     }
 
+    /** Cover event: diperkecil proporsional (tanpa crop), di-encode ulang ke JPEG. */
+    public function cover(string $sourcePath): string
+    {
+        $max = (int) config('galeri.cover.max_dimension');
+        $image = $this->manager()->read($sourcePath)->scaleDown($max, $max);
+
+        return (string) $image->encode(new JpegEncoder(quality: (int) config('galeri.cover.quality'), progressive: true, strip: true));
+    }
+
     /**
      * @return array{full: string, thumb: string, width: int, height: int, orientation: string, mime: string}
      */

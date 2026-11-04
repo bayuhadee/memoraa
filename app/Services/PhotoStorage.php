@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
  *   photos/{event_id}/{uuid}.jpg hasil resize
  *   thumbs/{event_id}/{uuid}.jpg thumbnail galeri
  *   zips/{event_id}/{uuid}.zip   arsip download host
+ *   covers/{event_id}/{uuid}.jpg foto cover event (diatur owner)
  */
 class PhotoStorage
 {
@@ -42,6 +43,11 @@ class PhotoStorage
         $name = Str::uuid()->toString().'.jpg';
 
         return ["photos/{$eventId}/{$name}", "thumbs/{$eventId}/{$name}"];
+    }
+
+    public function newCoverPath(int $eventId): string
+    {
+        return "covers/{$eventId}/".Str::uuid()->toString().'.jpg';
     }
 
     public function newZipPath(int $eventId, string $uuid): string

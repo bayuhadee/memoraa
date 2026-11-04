@@ -25,6 +25,7 @@ class Event extends Model implements AuthenticatableContract
         'bride_groom_names',
         'event_date',
         'address',
+        'max_guests',
         'payment_status',
         'is_active',
     ];
@@ -38,6 +39,7 @@ class Event extends Model implements AuthenticatableContract
             'password_plain' => 'encrypted',
             'payment_status' => PaymentStatus::class,
             'is_active' => 'boolean',
+            'max_guests' => 'integer',
         ];
     }
 
@@ -105,6 +107,30 @@ class Event extends Model implements AuthenticatableContract
     public function isUploadOpen(): bool
     {
         return $this->is_active && now(config('galeri.timezone'))->lessThanOrEqualTo($this->uploadDeadline());
+    }
+
+    public function hasGuestLimit(): bool
+    {
+        return $this->max_guests !== null;
+    }
+
+    /** Buku tamu penuh: tamu baru tidak bisa mengisi lagi (tamu lama tetap bisa mengubah). */
+    public function isGuestbookFull(): bool
+    {
+        return $this->hasGuestLimit() && $this->guests()->count() >= $this->max_guests;
+    }
+
+    public function hasCover(): bool
+    {
+        return $this->cover_path !== null;
+    }
+
+    /** URL cover; parameter v ikut berubah saat cover diganti agar cache browser diperbarui. */
+    public function coverUrl(): ?string
+    {
+        return $this->hasCover()
+            ? route('media.cover', ['event' => $this, 'v' => substr(md5($this->cover_path), 0, 8)])
+            : null;
     }
 
     public function eventDateLabel(): string
