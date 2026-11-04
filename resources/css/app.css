@@ -12,6 +12,7 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source not '../../public/build';
 
 /* Palet earthy: krem, cokelat kayu, aksen emas/tembaga, teks gelap. */
 @theme {
