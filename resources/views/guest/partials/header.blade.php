@@ -1,9 +1,10 @@
 {{-- Header undangan: nama mempelai, tanggal, alamat --}}
 <header class="relative overflow-hidden bg-espresso text-cream">
     @if ($event->hasCover())
-        {{-- Cover dari owner jadi latar; lapisan gelap tipis agar teks tetap terbaca. --}}
+        {{-- Cover dari owner jadi latar; overlay gelap agar teks di atasnya terbaca. --}}
         <img src="{{ $event->coverUrl() }}" alt="" class="absolute inset-0 h-full w-full object-cover" fetchpriority="high">
-        <div class="absolute inset-0 bg-gradient-to-b from-espresso/55 via-espresso/35 to-espresso/75"></div>
+        <div class="absolute inset-0 bg-black/45"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-espresso/50 via-espresso/30 to-espresso/80"></div>
     @else
         <div class="absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#fff_1px,transparent_0)] [background-size:22px_22px]"></div>
         <div class="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-gold/25 blur-3xl"></div>
